@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.myorg.quickstart;
+package insa.rennes;
 
 import org.apache.flink.api.java.ExecutionEnvironment;
 
