@@ -3,3 +3,5 @@
 \.DS_Store
 
 *.class
+
+src/main/java/insa/rennes/Settings\.java
