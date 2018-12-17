@@ -19,9 +19,11 @@
 package insa.rennes;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.GroupReduceFunction;
 import org.apache.flink.api.common.operators.Order;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple6;
 import org.apache.flink.api.java.tuple.Tuple9;
@@ -40,15 +42,20 @@ public class BatchJob {
 
 
 	public static void main(String[] args) throws Exception {
-		// set up the batch execution environment
 		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-		DataSet<Tuple6<Integer, String, Float, Float, Integer, Date>> fifaRanks = env.readCsvFile(fifaRanksPath)
+		DataSet<Tuple2<String, Integer>> fifaRanks;
+		DataSet<Tuple3<String, String, Integer>> internationalResults;
+
+		fifaRanks = env.readCsvFile(fifaRanksPath)
 				.ignoreFirstLine()
 				.types(Integer.class, String.class, Float.class, Float.class, Integer.class, String.class)
-				.flatMap(new FifaRankingDateConverter());
+				.flatMap(new FifaRankingDateConverter())
+				.flatMap(new FifaRankingStats())
+				.groupBy(0)
+				.reduceGroup(new FifaRankingReduce());
 
-		DataSet<Tuple3<String, String, Integer>> internationalResults = env.readCsvFile(internationalResultsPath)
+		internationalResults = env.readCsvFile(internationalResultsPath)
 				.ignoreFirstLine()
 				.types(String.class, String.class, String.class, Integer.class, Integer.class, String.class, String.class, String.class, Boolean.class)
 				.flatMap(new InternationalResultsDateConverter())
@@ -56,9 +63,9 @@ public class BatchJob {
 				.groupBy(0, 1)
 				.sum(2);
 
-		internationalResults.print();
+		fifaRanks.print();
 
-		env.execute("Worldcup Predictor");
+		//env.execute("Worldcup Predictor");
 	}
 
 	public static class FifaRankingDateConverter implements FlatMapFunction<Tuple6<Integer, String, Float, Float, Integer, String>, Tuple6<Integer, String, Float, Float, Integer, Date>> {
@@ -74,6 +81,13 @@ public class BatchJob {
 		public void flatMap(Tuple9<String, String, String, Integer, Integer, String, String, String, Boolean> in, Collector<Tuple9<Date, String, String, Integer, Integer, String, String, String, Boolean>> out) throws Exception {
 			DateFormat format = new SimpleDateFormat("yyyy-mm-dd");
 			out.collect(new Tuple9(format.parse(in.f0), in.f1, in.f2, in.f3, in.f4, in.f5, in.f6, in.f7, in.f8));
+		}
+	}
+
+	public static class FifaRankingStats implements FlatMapFunction<Tuple6<Integer, String, Float, Float, Integer, Date>, Tuple3<String, Integer, Integer>> {
+		@Override
+		public void flatMap(Tuple6<Integer, String, Float, Float, Integer, Date> in, Collector<Tuple3<String, Integer, Integer>> out) throws Exception {
+			out.collect(new Tuple3(in.f1, in.f0, 1));
 		}
 	}
 
@@ -114,6 +128,28 @@ public class BatchJob {
 				out.collect(new Tuple3(in.f1, "wc_goals_against", in.f4));
 				out.collect(new Tuple3(in.f2, "wc_goals_against", in.f3));
 			}
+		}
+	}
+
+
+
+
+	public static class FifaRankingReduce
+			implements GroupReduceFunction<Tuple3<String, Integer, Integer>, Tuple2<String, Integer>> {
+
+		@Override
+		public void reduce(Iterable<Tuple3<String, Integer, Integer>> in, Collector<Tuple2<String, Integer>> out) {
+			int rankSum = 0;
+			int count = 0;
+			String country = "";
+
+			for(Tuple3<String, Integer, Integer> tuple: in) {
+				country = tuple.f0;
+				rankSum += tuple.f1;
+				count += tuple.f2;
+			}
+
+			out.collect(new Tuple2(country, rankSum/count));
 		}
 	}
 }
