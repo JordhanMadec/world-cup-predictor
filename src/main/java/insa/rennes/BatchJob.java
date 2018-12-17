@@ -19,6 +19,7 @@
 package insa.rennes;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.operators.Order;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple3;
@@ -102,7 +103,17 @@ public class BatchJob {
 				}
 			}
 
-			//out.collect(new Tuple3(in.f1, "", in.f3));
+			out.collect(new Tuple3(in.f1, "goals_for", in.f3));
+			out.collect(new Tuple3(in.f2, "goals_for", in.f4));
+			out.collect(new Tuple3(in.f1, "goals_against", in.f4));
+			out.collect(new Tuple3(in.f2, "goals_against", in.f3));
+
+			if (in.f5.equals("FIFA World Cup")) {
+				out.collect(new Tuple3(in.f1, "wc_goals_for", in.f3));
+				out.collect(new Tuple3(in.f2, "wc_goals_for", in.f4));
+				out.collect(new Tuple3(in.f1, "wc_goals_against", in.f4));
+				out.collect(new Tuple3(in.f2, "wc_goals_against", in.f3));
+			}
 		}
 	}
 }
