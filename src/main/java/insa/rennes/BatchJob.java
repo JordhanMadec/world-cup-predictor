@@ -34,10 +34,10 @@ import java.util.Date;
 
 public class BatchJob {
 
-	static final String fifaRanksPath = "C:/Users/maxime  cadiou/Desktop/5INFO/Projet_big_data/fifa_rankings.csv";
-	static final String worldcupHistoryPath = "C:/Users/maxime  cadiou/Desktop/5INFO/Projet_big_data/WorldCups.csv";
+	static final String fifaRanksPath = "C:/Users/maxime  cadiou/Desktop/5INFO/Projet_big_data/projet/fifa_rankings.csv";
+	static final String worldcupHistoryPath = "C:/Users/maxime  cadiou/Desktop/5INFO/Projet_big_data/projet/WorldCups.csv";
 	static final String worldcupGamesPath = "";
-	static final String internationalResultsPath = "C:/Users/maxime  cadiou/Desktop/5INFO/Projet_big_data/international_results.csv";
+	static final String internationalResultsPath = "C:/Users/maxime  cadiou/Desktop/5INFO/Projet_big_data/projet/international_results.csv";
 
 
 	public static void main(String[] args) throws Exception {
