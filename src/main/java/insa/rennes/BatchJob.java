@@ -18,13 +18,13 @@
 
 package insa.rennes;
 
+import javassist.bytecode.annotation.DoubleMemberValue;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.api.java.tuple.Tuple3;
-import org.apache.flink.api.java.tuple.Tuple6;
-import org.apache.flink.api.java.tuple.Tuple9;
+import org.apache.flink.api.java.tuple.*;
 import org.apache.flink.util.Collector;
+import scala.Double$;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -32,19 +32,19 @@ import java.util.Date;
 
 public class BatchJob {
 
-	static final String fifaRanksPath = "/Users/jordhanmadec/dev/INSA/world-cup-predictor/fifa_ranking.csv";
-	static final String worldcupHistoryPath = "";
+	static final String fifaRanksPath = "C:/Users/maxime  cadiou/Desktop/5INFO/Projet_big_data/fifa_rankings.csv";
+	static final String worldcupHistoryPath = "C:/Users/maxime  cadiou/Desktop/5INFO/Projet_big_data/WorldCups.csv";
 	static final String worldcupGamesPath = "";
-	static final String internationalResultsPath = "/Users/jordhanmadec/dev/INSA/world-cup-predictor/international_results.csv";
+	static final String internationalResultsPath = "C:/Users/maxime  cadiou/Desktop/5INFO/Projet_big_data/international_results.csv";
 
 
 	public static void main(String[] args) throws Exception {
 		// set up the batch execution environment
 		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-		DataSet<Tuple6<Integer, String, Float, Float, Integer, Date>> fifaRanks = env.readCsvFile(fifaRanksPath)
+		DataSet<Tuple6<Integer, String, Float, Integer, Integer, Date>> fifaRanks = env.readCsvFile(fifaRanksPath)
 				.ignoreFirstLine()
-				.types(Integer.class, String.class, Float.class, Float.class, Integer.class, String.class)
+				.types(Integer.class, String.class, Float.class, Integer.class, Integer.class, String.class)
 				.flatMap(new FifaRankingDateConverter());
 
 		DataSet<Tuple3<String, String, Integer>> internationalResults = env.readCsvFile(internationalResultsPath)
@@ -55,14 +55,34 @@ public class BatchJob {
 				.groupBy(0, 1)
 				.sum(2);
 
-		internationalResults.print();
+		DataSet<Tuple3<String, String, Integer>> worldcupHistory = env.readCsvFile(worldcupHistoryPath)
+				.ignoreFirstLine()
+				.types(Integer.class, String.class, String.class, String.class, String.class, String.class, Integer.class, Integer.class, Integer.class, Integer.class)
+				.flatMap(new worldcupHistoryStats())
+				.groupBy(0)
+				.sum(2);
+
+		//internationalResults.print();
+		//fifaRanks.print();
+		worldcupHistory.print();
 
 		env.execute("Worldcup Predictor");
 	}
 
-	public static class FifaRankingDateConverter implements FlatMapFunction<Tuple6<Integer, String, Float, Float, Integer, String>, Tuple6<Integer, String, Float, Float, Integer, Date>> {
+
+	public static class worldcupHistoryStats implements FlatMapFunction<Tuple10<Integer, String, String, String, String, String, Integer, Integer, Integer, Integer>, Tuple3<String, String,  Integer>> {
 		@Override
-		public void flatMap(Tuple6<Integer, String, Float, Float, Integer, String> in, Collector<Tuple6<Integer, String, Float, Float, Integer, Date>> out) throws Exception {
+		public void flatMap(Tuple10<Integer, String, String, String, String, String, Integer, Integer, Integer, Integer> in, Collector<Tuple3<String, String, Integer>> out) throws Exception {
+
+			out.collect(new Tuple3(in.f2, "vainqueur",  1));
+
+
+		}
+	}
+
+	public static class FifaRankingDateConverter implements FlatMapFunction<Tuple6<Integer, String, Float, Integer, Integer, String>, Tuple6<Integer, String, Float, Integer, Integer, Date>> {
+		@Override
+		public void flatMap(Tuple6<Integer, String, Float, Integer, Integer, String> in, Collector<Tuple6<Integer, String, Float, Integer, Integer, Date>> out) throws Exception {
 			DateFormat format = new SimpleDateFormat("yyyy-mm-dd");
 			out.collect(new Tuple6(in.f0, in.f1, in.f2, in.f3, in.f4, format.parse(in.f5)));
 		}
