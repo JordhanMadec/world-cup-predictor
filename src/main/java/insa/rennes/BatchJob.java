@@ -53,11 +53,11 @@ public class BatchJob {
 				.flatMap(new WorldcupHistoryStats())
 				.groupBy(0)
 				.sum(2);
-		fifaRanks.print();
+		//fifaRanks.print();
 
 		//internationalResults.print();
-		fifaRanks.print();
-		//worldcupHistory.print();
+		//fifaRanks.print();
+		worldcupHistory.print();
 
 		//env.execute("Worldcup Predictor");
 	}
