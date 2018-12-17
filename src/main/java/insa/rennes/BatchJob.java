@@ -18,15 +18,12 @@
 
 package insa.rennes;
 
-import javassist.bytecode.annotation.DoubleMemberValue;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.GroupReduceFunction;
-import org.apache.flink.api.common.operators.Order;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.*;
 import org.apache.flink.util.Collector;
-import scala.Double$;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -62,19 +59,18 @@ public class BatchJob {
 				.groupBy(0, 1)
 				.sum(2);
 
-		DataSet<Tuple3<String, String, Integer>> worldcupHistory = env.readCsvFile(worldcupHistoryPath)
+		/*DataSet<Tuple3<String, String, Integer>> worldcupHistory = env.readCsvFile(worldcupHistoryPath)
 				.ignoreFirstLine()
 				.types(Integer.class, String.class, String.class, String.class, String.class, String.class, Integer.class, Integer.class, Integer.class, Integer.class)
 				.flatMap(new worldcupHistoryStats())
 				.groupBy(0)
-				.sum(2);
-		fifaRanks.print();
+				.sum(2);*/
 
 		//internationalResults.print();
-		//fifaRanks.print();
-		worldcupHistory.print();
+		fifaRanks.print();
+		//worldcupHistory.print();
 
-		env.execute("Worldcup Predictor");
+		//env.execute("Worldcup Predictor");
 	}
 
 
