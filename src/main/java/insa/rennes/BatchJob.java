@@ -29,7 +29,7 @@ public class BatchJob {
 
 		DataSet<Tuple2<String, Integer>> fifaRanks;
 		DataSet<Tuple11<String, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>> internationalResults;
-		DataSet<Tuple3<String, String, Integer>> worldcupHistory;
+		DataSet<Tuple4<String, Integer, Integer, Double>> worldcupHistory;
 
 		fifaRanks = env.readCsvFile(Settings.fifaRanksPath)
 				.ignoreFirstLine()
@@ -49,15 +49,14 @@ public class BatchJob {
 
 		worldcupHistory = env.readCsvFile(Settings.worldcupHistoryPath)
 				.ignoreFirstLine()
-				.types(Integer.class, String.class, String.class, String.class, String.class, String.class, Integer.class, Integer.class, Integer.class, Integer.class)
+				.types(Integer.class, String.class, String.class, String.class, String.class, String.class, Integer.class, Integer.class, Integer.class, Float.class)
 				.flatMap(new WorldcupHistoryStats())
 				.groupBy(0)
-				.sum(2);
-		fifaRanks.print();
+				.reduceGroup(new WorldCupHistoryStatsReduce());
 
-		internationalResults.print();
+		//internationalResults.print();
 		//fifaRanks.print();
-		//worldcupHistory.print();
+		worldcupHistory.print();
 
 		//env.execute("Worldcup Predictor");
 	}
