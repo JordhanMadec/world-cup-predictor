@@ -28,7 +28,7 @@ public class BatchJob {
 		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
 		DataSet<Tuple2<String, Integer>> fifaRanks;
-		DataSet<Tuple11<String, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>> internationalResults;
+		DataSet<Tuple3<String, Double, Double>> internationalResults;
 		DataSet<Tuple4<String, Integer, Integer, Double>> worldcupHistory;
 
 		fifaRanks = env.readCsvFile(Settings.fifaRanksPath)
@@ -54,9 +54,9 @@ public class BatchJob {
 				.groupBy(0)
 				.reduceGroup(new WorldCupHistoryStatsReduce());
 
-		//internationalResults.print();
+		internationalResults.print();
 		//fifaRanks.print();
-		worldcupHistory.print();
+		//worldcupHistory.print();
 
 		//env.execute("Worldcup Predictor");
 	}
