@@ -27,8 +27,8 @@ public class BatchJob {
 	public static void main(String[] args) throws Exception {
 		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-		DataSet<Tuple2<String, Integer>> fifaRanks;
-		DataSet<Tuple3<String, Double, Double>> internationalResults;
+		DataSet<Tuple4<String, Integer, Double, Integer>> fifaRanks;
+		DataSet<Tuple5<String, Integer, Double, Double, Double>> internationalResults;
 		DataSet<Tuple4<String, Integer, Integer, Double>> worldcupHistory;
 
 		fifaRanks = env.readCsvFile(Settings.fifaRanksPath)
@@ -36,15 +36,15 @@ public class BatchJob {
 				.types(Integer.class, String.class, Float.class, Integer.class, Integer.class, String.class)
 				.flatMap(new FifaRankingDateConverter())
 				.flatMap(new FifaRankingStats())
-				.groupBy(0)
-				.reduceGroup(new FifaRankingAverage());
+				.groupBy(0, 1)
+				.reduceGroup(new FifaRankingStatsReduce());
 
 		internationalResults = env.readCsvFile(Settings.internationalResultsPath)
 				.ignoreFirstLine()
 				.types(String.class, String.class, String.class, Integer.class, Integer.class, String.class, String.class, String.class, Boolean.class)
 				.flatMap(new InternationalResultsDateConverter())
 				.flatMap(new InternationalResultsStats())
-				.groupBy(0)
+				.groupBy(0, 1)
 				.reduceGroup(new InternationalResultsStatsReduce());
 
 		worldcupHistory = env.readCsvFile(Settings.worldcupHistoryPath)
@@ -54,8 +54,8 @@ public class BatchJob {
 				.groupBy(0)
 				.reduceGroup(new WorldCupHistoryStatsReduce());
 
-		internationalResults.print();
-		//fifaRanks.print();
+		//internationalResults.print();
+		fifaRanks.print();
 		//worldcupHistory.print();
 
 		//env.execute("Worldcup Predictor");
