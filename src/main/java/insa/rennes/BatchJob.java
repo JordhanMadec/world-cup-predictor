@@ -62,6 +62,11 @@ public class BatchJob {
 		// (team, edition, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
 		DataSet<Tuple8<String, Integer, Double, Double, Double, Integer, Integer, Double>> winnersVectorsWithoutRanking;
 
+		// (rank average, rank evolution, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
+		DataSet<Tuple8<Double, Double, Double, Double, Double, Double, Double, Double>> winnerVectorWithRanking;
+		// (win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
+		DataSet<Tuple6<Double, Double, Double, Double, Double, Double>> winnerVectorWithoutRanking;
+
 
 
 
@@ -120,7 +125,11 @@ public class BatchJob {
 				.equalTo(0, 1)
 				.with(new WinnersVectorsWithoutRanking());
 
+		winnerVectorWithRanking = winnersVectorsWithRanking
+				.reduceGroup(new WinnersVectorsWithRankingReduce());
 
+		winnerVectorWithoutRanking = winnersVectorsWithoutRanking
+				.reduceGroup(new WinnersVectorsWithoutRankingReduce());
 
 
 
@@ -130,15 +139,15 @@ public class BatchJob {
 		//vectors.print();
 		//vectors.print();
 		//winnersVectorsWithRanking.print();
-		winnersVectorsWithoutRanking.print();
+		//winnerVectorWithRanking.print();
+		//winnersVectorsWithoutRanking.print();
+		//winnerVectorWithoutRanking.print();
 	}
 
+	// Winner vector with ranking (since 1994)
+	// (4.676270685579197,6.833333333333333,0.6607654895911642,0.11742189295120946,0.7256867327779943,3.6666666666666665,2.1666666666666665,0.4075396825396825)
 
-
-
-
-
-
-
+	// Winner vector without ranking (since 1930)
+	// (0.6247429077460883,0.159813471270157,0.6877995590081843,2.15,1.2,0.3839285714285714)
 
 }

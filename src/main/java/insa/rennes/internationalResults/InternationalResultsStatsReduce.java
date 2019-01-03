@@ -7,8 +7,7 @@ import org.apache.flink.util.Collector;
 
 public class InternationalResultsStatsReduce implements GroupReduceFunction<
     Tuple7<String, Integer, Integer, Integer, Integer, Integer, Integer>,
-    Tuple5<String, Integer, Double, Double, Double>
-> {
+    Tuple5<String, Integer, Double, Double, Double>> {
 
     @Override
     public void reduce(
