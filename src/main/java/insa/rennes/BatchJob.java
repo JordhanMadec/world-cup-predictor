@@ -87,7 +87,8 @@ public class BatchJob {
 				.flatMap(new WorldcupHistoryStats())
 				.groupBy(0)
 				.sortGroup(1, Order.ASCENDING)
-				.reduceGroup(new WorldCupHistoryStatsReduce());
+				.reduceGroup(new WorldCupHistoryStatsReduce())
+				.distinct();
 
 		winners = env.readCsvFile(Settings.worldcupHistoryPath)
 				.ignoreFirstLine()

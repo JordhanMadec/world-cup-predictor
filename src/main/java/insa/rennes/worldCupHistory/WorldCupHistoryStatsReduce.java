@@ -1,5 +1,6 @@
-package insa.rennes;
+package insa.rennes.worldCupHistory;
 
+import insa.rennes.Utils;
 import org.apache.flink.api.common.functions.GroupReduceFunction;
 import org.apache.flink.api.java.tuple.Tuple5;
 import org.apache.flink.api.java.tuple.Tuple4;
@@ -15,10 +16,11 @@ public class WorldCupHistoryStatsReduce implements GroupReduceFunction<Tuple4<St
         String country = "";
 
         for(Tuple4<String, Integer, Integer, Integer> tuple: in) {
+            country = tuple.f0;
+
             // (team, edition, finals played, finals won, ratio)
             out.collect(new Tuple5(country, Utils.getWorldCupEdition(tuple.f1), finalsPlayed, finalsWon, ratio));
 
-            country = tuple.f0;
             finalsPlayed += tuple.f2;
             finalsWon += tuple.f3;
             ratio = finalsWon * 1.0 / finalsPlayed;

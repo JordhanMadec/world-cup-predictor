@@ -1,5 +1,6 @@
-package insa.rennes;
+package insa.rennes.fifaRanking;
 
+import insa.rennes.Utils;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.tuple.Tuple5;
 import org.apache.flink.api.java.tuple.Tuple6;
