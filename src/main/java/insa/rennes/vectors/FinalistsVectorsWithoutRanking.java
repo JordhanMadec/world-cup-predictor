@@ -1,11 +1,11 @@
-package insa.rennes;
+package insa.rennes.vectors;
 
 import org.apache.flink.api.common.functions.JoinFunction;
 import org.apache.flink.api.java.tuple.Tuple10;
 import org.apache.flink.api.java.tuple.Tuple5;
 import org.apache.flink.api.java.tuple.Tuple7;
 
-public class FinalistsVectors implements JoinFunction<
+public class FinalistsVectorsWithoutRanking implements JoinFunction<
         Tuple7<String, Integer, Double, Integer, Double, Double, Double>,
         Tuple5<String, Integer, Integer, Integer, Double>,
         Tuple10<String, Integer, Double, Integer, Double, Double, Double, Integer, Integer, Double>> {

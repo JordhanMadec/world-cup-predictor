@@ -24,6 +24,7 @@ import insa.rennes.fifaRanking.FifaRankingStatsReduce;
 import insa.rennes.internationalResults.InternationalResultsDateConverter;
 import insa.rennes.internationalResults.InternationalResultsStats;
 import insa.rennes.internationalResults.InternationalResultsStatsReduce;
+import insa.rennes.vectors.*;
 import insa.rennes.worldCupHistory.WorldCupHistoryStatsReduce;
 import insa.rennes.worldCupHistory.WorldcupHistoryStats;
 import insa.rennes.worldCupHistory.WorldcupWinners;
@@ -57,8 +58,9 @@ public class BatchJob {
 		DataSet<Tuple7<String, Integer, Double, Integer, Double, Double, Double>> vectors;
 
 		// (team, edition, rank average, rank evolution, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
-		DataSet<Tuple10<String, Integer, Double, Integer, Double, Double, Double, Integer, Integer, Double>> winnersVectors;
-
+		DataSet<Tuple10<String, Integer, Double, Integer, Double, Double, Double, Integer, Integer, Double>> winnersVectorsWithRanking;
+		// (team, edition, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
+		DataSet<Tuple8<String, Integer, Double, Double, Double, Integer, Integer, Double>> winnersVectorsWithoutRanking;
 
 
 
@@ -100,14 +102,23 @@ public class BatchJob {
 				.equalTo(0, 1)
 				.with(new JoinRanksAndResults());
 
-		winnersVectors = vectors.join(worldcupHistory)
+		winnersVectorsWithRanking = vectors.join(worldcupHistory)
 				.where(0, 1)
 				.equalTo(0, 1)
-				.with(new FinalistsVectors())
+				.with(new FinalistsVectorsWithRanking())
 				.join(winners)
 				.where(0, 1)
 				.equalTo(0, 1)
-				.with(new WinnersVectors());
+				.with(new WinnersVectorsWithRanking());
+
+		winnersVectorsWithoutRanking = internationalResults.join(worldcupHistory)
+				.where(0, 1)
+				.equalTo(0, 1)
+				.with(new FinalistsVectorsWithoutRanking())
+				.join(winners)
+				.where(0, 1)
+				.equalTo(0, 1)
+				.with(new WinnersVectorsWithoutRanking());
 
 
 
@@ -116,9 +127,10 @@ public class BatchJob {
 		//internationalResults.print();
 		//fifaRanks.print();
 		//worldcupHistory.print();
-		//winners.print();
 		//vectors.print();
-		winnersVectors.print();
+		//vectors.print();
+		//winnersVectorsWithRanking.print();
+		winnersVectorsWithoutRanking.print();
 	}
 
 
