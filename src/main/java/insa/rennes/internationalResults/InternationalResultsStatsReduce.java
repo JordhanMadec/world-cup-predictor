@@ -16,8 +16,6 @@ public class InternationalResultsStatsReduce implements GroupReduceFunction<
         Collector<Tuple5<String, Integer, Double, Double, Double>> out
     ) throws Exception {
 
-        // (country, win ratio, loss ratio, goals ratio)
-
         String team = "";
         int year = 0;
         double win = 0.0;
@@ -36,6 +34,7 @@ public class InternationalResultsStatsReduce implements GroupReduceFunction<
             goals_against += tuple.f6 * 1.0;
         }
 
+        // (team, edition, win ratio, loss ratio, goals ratio)
         out.collect(new Tuple5(team, year, win / (win + draw + loss), loss / (win + draw + loss), goals_for / (goals_for + goals_against)));
     }
 }

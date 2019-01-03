@@ -1,10 +1,8 @@
 package insa.rennes;
 
 import org.apache.flink.api.common.functions.GroupReduceFunction;
-import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.api.java.tuple.Tuple5;
-import org.apache.flink.shaded.guava18.com.google.common.collect.Iterables;
 import org.apache.flink.util.Collector;
 
 import java.util.Date;
@@ -13,8 +11,6 @@ public class FifaRankingStatsReduce implements GroupReduceFunction<Tuple5<String
 
     @Override
     public void reduce(Iterable<Tuple5<String, Integer, Date, Integer, Integer>> in, Collector<Tuple4<String, Integer, Double, Integer>> out) {
-
-        // (team, edition, date, rank average, rank evolution)
 
         double rankSum = 0.0;
         int count = 0;
@@ -41,6 +37,7 @@ public class FifaRankingStatsReduce implements GroupReduceFunction<Tuple5<String
 
         int rankEvolution = start.f3 - end.f3;
 
+        // (team, edition, rank average, rank evolution)
         out.collect(new Tuple4(country, edition, rankSum/count, rankEvolution));
     }
 
