@@ -1,4 +1,4 @@
-package insa.rennes.worldCupHistory;
+package insa.rennes.world.cup.history;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.tuple.Tuple10;
