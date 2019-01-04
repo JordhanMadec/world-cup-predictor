@@ -1,4 +1,4 @@
-package insa.rennes.vectors;
+package insa.rennes.winners;
 
 import org.apache.flink.api.common.functions.GroupReduceFunction;
 import org.apache.flink.api.java.tuple.Tuple10;
@@ -47,6 +47,17 @@ public class WinnersVectorsWithRankingReduce implements GroupReduceFunction<
         finalsPlayed /= nbWinners;
         finalsWon /= nbWinners;
         finalsRatio /= nbWinners;
+
+        double norm = Math.sqrt(rank*rank + rankEvolution*rankEvolution + winRatio*winRatio + lossRatio*lossRatio + goalsRatio*goalsRatio + finalsPlayed*finalsPlayed + finalsWon*finalsWon + finalsRatio*finalsRatio);
+
+        rank /= norm;
+        rankEvolution /= norm;
+        winRatio /= norm;
+        lossRatio /= norm;
+        goalsRatio /= norm;
+        finalsPlayed /= norm;
+        finalsWon /= norm;
+        finalsRatio /= norm;
 
         // (rank average, rank evolution, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
         out.collect(new Tuple8(rank, rankEvolution, winRatio, lossRatio, goalsRatio, finalsPlayed, finalsWon, finalsRatio));

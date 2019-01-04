@@ -42,6 +42,15 @@ public class WinnersVectorsWithoutRankingReduce implements GroupReduceFunction<
         finalsWon /= nbWinners;
         finalsRatio /= nbWinners;
 
+        double norm = Math.sqrt(winRatio*winRatio + lossRatio*lossRatio + goalsRatio*goalsRatio + finalsPlayed*finalsPlayed + finalsWon*finalsWon + finalsRatio*finalsRatio);
+
+        winRatio /= norm;
+        lossRatio /= norm;
+        goalsRatio /= norm;
+        finalsPlayed /= norm;
+        finalsWon /= norm;
+        finalsRatio /= norm;
+
         // (rank average, rank evolution, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
         out.collect(new Tuple6(winRatio, lossRatio, goalsRatio, finalsPlayed, finalsWon, finalsRatio));
     }

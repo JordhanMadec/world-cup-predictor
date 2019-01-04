@@ -18,13 +18,14 @@
 
 package insa.rennes;
 
+import insa.rennes.competitors.FilterWorldcupEdition;
 import insa.rennes.fifaRanking.FifaRankingDateConverter;
 import insa.rennes.fifaRanking.FifaRankingStats;
 import insa.rennes.fifaRanking.FifaRankingStatsReduce;
 import insa.rennes.internationalResults.InternationalResultsDateConverter;
 import insa.rennes.internationalResults.InternationalResultsStats;
 import insa.rennes.internationalResults.InternationalResultsStatsReduce;
-import insa.rennes.vectors.*;
+import insa.rennes.winners.*;
 import insa.rennes.worldCupHistory.WorldCupHistoryStatsReduce;
 import insa.rennes.worldCupHistory.WorldcupHistoryStats;
 import insa.rennes.worldCupHistory.WorldcupWinners;
@@ -40,22 +41,21 @@ public class BatchJob {
 
 
 
-
+		// ----- PARSING -----
 
 		// (team, edition, rank average, rank evolution)
 		DataSet<Tuple4<String, Integer, Double, Integer>> fifaRanks;
-
 		// (team, edition, win ratio, loss ratio, goals ratio)
 		DataSet<Tuple5<String, Integer, Double, Double, Double>> internationalResults;
-
 		// (team, edition, finals played, finals won, ratio)
 		DataSet<Tuple5<String, Integer, Integer, Integer, Double>> worldcupHistory;
 
+
+
+		// ----- WINNERS VECTORS -----
+
 		// (team, edition)
 		DataSet<Tuple2<String, Integer>> winners;
-
-		// (team, edition, rank average, rank evolution, win ratio, loss ratio, goals ratio)
-		DataSet<Tuple7<String, Integer, Double, Integer, Double, Double, Double>> vectors;
 
 		// (team, edition, rank average, rank evolution, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
 		DataSet<Tuple10<String, Integer, Double, Integer, Double, Double, Double, Integer, Integer, Double>> winnersVectorsWithRanking;
@@ -66,6 +66,16 @@ public class BatchJob {
 		DataSet<Tuple8<Double, Double, Double, Double, Double, Double, Double, Double>> winnerVectorWithRanking;
 		// (win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
 		DataSet<Tuple6<Double, Double, Double, Double, Double, Double>> winnerVectorWithoutRanking;
+
+
+
+		// ----- COMPETITORS VECTORS -----
+
+		// (rank average, rank evolution, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
+		DataSet<Tuple7<String, Integer, Double, Integer, Double, Double, Double>> competitorsVectorsWithRanking;
+		// (win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
+		DataSet<Tuple6<Double, Double, Double, Double, Double, Double>> competitorsVectorsWithoutRanking;
+
 
 
 
@@ -102,12 +112,11 @@ public class BatchJob {
 				.types(Integer.class, String.class, String.class, String.class, String.class, String.class, Integer.class, Integer.class, Integer.class, Float.class)
 				.flatMap(new WorldcupWinners());
 
-		vectors = fifaRanks.join(internationalResults)
+		winnersVectorsWithRanking = fifaRanks.join(internationalResults)
 				.where(0, 1)
 				.equalTo(0, 1)
-				.with(new JoinRanksAndResults());
-
-		winnersVectorsWithRanking = vectors.join(worldcupHistory)
+				.with(new JoinRanksAndResults())
+				.join(worldcupHistory)
 				.where(0, 1)
 				.equalTo(0, 1)
 				.with(new FinalistsVectorsWithRanking())
@@ -131,23 +140,28 @@ public class BatchJob {
 		winnerVectorWithoutRanking = winnersVectorsWithoutRanking
 				.reduceGroup(new WinnersVectorsWithoutRankingReduce());
 
+		competitorsVectorsWithRanking = fifaRanks.join(internationalResults.filter(new FilterWorldcupEdition()))
+				.where(0, 1)
+				.equalTo(0, 1)
+				.with(new JoinRanksAndResults());
+
 
 
 		//internationalResults.print();
 		//fifaRanks.print();
 		//worldcupHistory.print();
-		//vectors.print();
-		//vectors.print();
+		//winners.print();
 		//winnersVectorsWithRanking.print();
 		//winnerVectorWithRanking.print();
 		//winnersVectorsWithoutRanking.print();
 		//winnerVectorWithoutRanking.print();
+		competitorsVectorsWithRanking.print();
 	}
 
 	// Winner vector with ranking (since 1994)
-	// (4.676270685579197,6.833333333333333,0.6607654895911642,0.11742189295120946,0.7256867327779943,3.6666666666666665,2.1666666666666665,0.4075396825396825)
+	// (0.49893470671731455,0.7290825086499529,0.07050037474835713,0.012528329017067418,0.07742714687235631,0.39121500464143816,0.23117250274266798,0.04348244694445422)
 
 	// Winner vector without ranking (since 1930)
-	// (0.6247429077460883,0.159813471270157,0.6877995590081843,2.15,1.2,0.3839285714285714)
+	// (0.2344814297436818,0.05998193940435631,0.25814814697962074,0.8069480544688464,0.45038961179656545,0.14409786686943687)
 
 }
