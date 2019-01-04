@@ -28,6 +28,7 @@ import insa.rennes.internationalResults.InternationalResultsStats;
 import insa.rennes.internationalResults.InternationalResultsStatsReduce;
 import insa.rennes.winners.*;
 import insa.rennes.worldCupHistory.WorldCupHistoryStatsReduce;
+import insa.rennes.worldCupHistory.WorldcupHistoryEliminatesDouble;
 import insa.rennes.worldCupHistory.WorldcupHistoryStats;
 import insa.rennes.worldCupHistory.WorldcupWinners;
 import org.apache.flink.api.common.operators.Order;
@@ -72,11 +73,10 @@ public class BatchJob {
 
 		// ----- COMPETITORS VECTORS -----
 
-		// (rank average, rank evolution, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
-		DataSet<Tuple7<String, Integer, Double, Integer, Double, Double, Double>> competitorsVectorsWithRanking;
-		// (win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
-		DataSet<Tuple6<Double, Double, Double, Double, Double, Double>> competitorsVectorsWithoutRanking;
-
+		// (team, edition, rank average, rank evolution, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
+		DataSet<Tuple10<String, Integer, Double, Integer, Double, Double, Double, Integer, Integer, Double>> competitorsVectorsWithRanking;
+		// (team, edition, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
+		DataSet<Tuple8<String, Integer, Double, Double, Double, Integer, Integer, Double>> competitorsVectorsWithoutRanking;
 
 
 
@@ -106,7 +106,9 @@ public class BatchJob {
 				.groupBy(0)
 				.sortGroup(1, Order.ASCENDING)
 				.reduceGroup(new WorldCupHistoryStatsReduce())
-				.distinct();
+				.distinct()
+				.groupBy(0,1)
+				.reduceGroup(new WorldcupHistoryEliminatesDouble());
 
 		winners = env.readCsvFile(Settings.worldcupHistoryPath)
 				.ignoreFirstLine()
@@ -141,14 +143,14 @@ public class BatchJob {
 		winnerVectorWithoutRanking = winnersVectorsWithoutRanking
 				.reduceGroup(new WinnersVectorsWithoutRankingReduce());
 
-		/*competitorsVectorsWithRanking = fifaRanks.join(internationalResults.filter(new FilterWorldcupEdition()))
+		competitorsVectorsWithRanking = fifaRanks.join(internationalResults.filter(new FilterWorldcupEdition()))
 				.where(0, 1)
 				.equalTo(0, 1)
 				.with(new JoinRanksAndResults())
 				.join(worldcupHistory)
 				.where(0,1)
 				.equalTo(0,1)
-				.with(new CompetitorsVectorsWithRanking())*/;
+				.with(new CompetitorsVectorsWithRanking());
 
 
 
@@ -156,13 +158,13 @@ public class BatchJob {
 
 		//internationalResults.print();
 		//fifaRanks.print();
-		worldcupHistory.print();
+		//worldcupHistory.print();
 		//winners.print();
 		//winnersVectorsWithRanking.print();
 		//winnerVectorWithRanking.print();
 		//winnersVectorsWithoutRanking.print();
 		//winnerVectorWithoutRanking.print();
-		//competitorsVectorsWithRanking.print();
+		competitorsVectorsWithRanking.print();
 	}
 
 	// Winner vector with ranking (since 1994)

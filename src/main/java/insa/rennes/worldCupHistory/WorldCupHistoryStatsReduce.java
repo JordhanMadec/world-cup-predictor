@@ -25,7 +25,7 @@ public class WorldCupHistoryStatsReduce implements GroupReduceFunction<Tuple4<St
             country = tuple.f0;
 
             for(int edition: Utils.getEDITIONS()) {
-                if (!visited_editions.contains(edition) && edition < Utils.getWorldCupEdition(tuple.f1)) {
+                if (!visited_editions.contains(edition) && edition <= Utils.getWorldCupEdition(tuple.f1)) {
                     visited_editions.add(edition);
                     // (team, edition, finals played, finals won, ratio)
                     out.collect(new Tuple5(country, edition, finalsPlayed, finalsWon, ratio));

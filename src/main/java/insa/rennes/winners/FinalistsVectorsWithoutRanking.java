@@ -14,6 +14,7 @@ public class FinalistsVectorsWithoutRanking implements JoinFunction<
             Tuple5<String, Integer, Double, Double, Double> in1,
             Tuple5<String, Integer, Integer, Integer, Double> in2
     ) throws Exception {
+        // (win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
         return new Tuple8(in1.f0, in1.f1, in1.f2, in1.f3, in1.f4, in2.f2, in2.f3, in2.f4);
     }
 }
