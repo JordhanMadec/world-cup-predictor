@@ -56,10 +56,10 @@ public class BatchJob {
 
 		// ----- ALL VECTORS -----
 
-		// (team, edition, rank average, rank evolution, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
-		DataSet<Tuple10<String, Integer, Double, Integer, Double, Double, Double, Integer, Integer, Double>> allVectors;
-		// (team, edition, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
-		DataSet<Tuple8<String, Integer, Double, Double, Double, Integer, Integer, Double>> allVectorsNoRanking;
+		// (team, edition, rank average, rank evolution, win ratio, loss ratio, goals ratio, finals ratio)
+		DataSet<Tuple8<String, Integer, Double, Integer, Double, Double, Double, Double>> allVectors;
+		// (team, edition, win ratio, loss ratio, goals ratio, finals ratio)
+		DataSet<Tuple6<String, Integer, Double, Double, Double, Double>> allVectorsNoRanking;
 
 
 
@@ -68,10 +68,10 @@ public class BatchJob {
 		// (team, edition)
 		DataSet<Tuple2<String, Integer>> winners;
 
-		// (rank average, rank evolution, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
-		DataSet<Tuple8<Double, Double, Double, Double, Double, Double, Double, Double>> winnerVector;
-		// (win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
-		DataSet<Tuple6<Double, Double, Double, Double, Double, Double>> winnerVectorNoRanking;
+		// (rank average, rank evolution, win ratio, loss ratio, goals ratio, finals ratio)
+		DataSet<Tuple6<Double, Double, Double, Double, Double, Double>> winnerVector;
+		// (win ratio, loss ratio, goals ratio, finals ratio)
+		DataSet<Tuple4<Double, Double, Double, Double>> winnerVectorNoRanking;
 
 
 
@@ -178,9 +178,9 @@ public class BatchJob {
 
 		//winners.print();
 		//winnerVector.print();
-		winnerVectorNoRanking.print();
+		//winnerVectorNoRanking.print();
 
-		//cosineSimilarity.print();
+		cosineSimilarity.print();
 		//cosineSimilarityNoRanking.print();
 	}
 
