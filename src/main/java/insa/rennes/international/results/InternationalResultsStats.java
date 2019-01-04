@@ -1,4 +1,4 @@
-package insa.rennes.internationalResults;
+package insa.rennes.international.results;
 
 import insa.rennes.Utils;
 import org.apache.flink.api.common.functions.FlatMapFunction;

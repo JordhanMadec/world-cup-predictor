@@ -5,7 +5,7 @@ import org.apache.flink.api.java.tuple.Tuple10;
 import org.apache.flink.api.java.tuple.Tuple8;
 import org.apache.flink.util.Collector;
 
-public class WinnersVectorsWithRankingReduce implements GroupReduceFunction<
+public class WinnerReduce implements GroupReduceFunction<
         Tuple10<String, Integer, Double, Integer, Double, Double, Double, Integer, Integer, Double>,
         Tuple8<Double, Double, Double, Double, Double, Double, Double, Double>> {
 

@@ -1,9 +1,9 @@
-package insa.rennes.competitors;
+package insa.rennes.cosine.similarity;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple10;
 
-public class CompetitorsVectorsWithRankingNormalize implements MapFunction<
+public class Normalize implements MapFunction<
         Tuple10<String, Integer, Double, Integer, Double, Double, Double, Integer, Integer, Double>,
         Tuple10<String, Integer, Double, Double, Double, Double, Double, Double, Double, Double>> {
     @Override

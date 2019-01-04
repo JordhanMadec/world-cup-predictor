@@ -1,4 +1,4 @@
-package insa.rennes.internationalResults;
+package insa.rennes.international.results;
 
 import org.apache.flink.api.common.functions.GroupReduceFunction;
 import org.apache.flink.api.java.tuple.Tuple5;

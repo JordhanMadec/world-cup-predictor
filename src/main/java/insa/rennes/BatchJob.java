@@ -18,18 +18,19 @@
 
 package insa.rennes;
 
-import insa.rennes.competitors.*;
-import insa.rennes.fifaRanking.FifaRankingDateConverter;
-import insa.rennes.fifaRanking.FifaRankingStats;
-import insa.rennes.fifaRanking.FifaRankingStatsReduce;
-import insa.rennes.internationalResults.InternationalResultsDateConverter;
-import insa.rennes.internationalResults.InternationalResultsStats;
-import insa.rennes.internationalResults.InternationalResultsStatsReduce;
+import insa.rennes.cosine.similarity.*;
+import insa.rennes.vectors.*;
+import insa.rennes.fifa.ranking.FifaRankingDateConverter;
+import insa.rennes.fifa.ranking.FifaRankingStats;
+import insa.rennes.fifa.ranking.FifaRankingStatsReduce;
+import insa.rennes.international.results.InternationalResultsDateConverter;
+import insa.rennes.international.results.InternationalResultsStats;
+import insa.rennes.international.results.InternationalResultsStatsReduce;
 import insa.rennes.winners.*;
-import insa.rennes.worldCupHistory.WorldCupHistoryStatsReduce;
-import insa.rennes.worldCupHistory.WorldcupHistoryEliminatesDouble;
-import insa.rennes.worldCupHistory.WorldcupHistoryStats;
-import insa.rennes.worldCupHistory.WorldcupWinners;
+import insa.rennes.world.cup.history.WorldCupHistoryStatsReduce;
+import insa.rennes.world.cup.history.WorldcupHistoryEliminatesDouble;
+import insa.rennes.world.cup.history.WorldcupHistoryStats;
+import insa.rennes.world.cup.history.WorldcupWinners;
 import org.apache.flink.api.common.operators.Order;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
@@ -53,34 +54,33 @@ public class BatchJob {
 
 
 
+		// ----- ALL VECTORS -----
+
+		// (team, edition, rank average, rank evolution, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
+		DataSet<Tuple10<String, Integer, Double, Integer, Double, Double, Double, Integer, Integer, Double>> allVectors;
+		// (team, edition, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
+		DataSet<Tuple8<String, Integer, Double, Double, Double, Integer, Integer, Double>> allVectorsNoRanking;
+
+
+
 		// ----- WINNERS VECTORS -----
 
 		// (team, edition)
 		DataSet<Tuple2<String, Integer>> winners;
 
-		// (team, edition, rank average, rank evolution, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
-		DataSet<Tuple10<String, Integer, Double, Integer, Double, Double, Double, Integer, Integer, Double>> winnersVectorsWithRanking;
-		// (team, edition, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
-		DataSet<Tuple8<String, Integer, Double, Double, Double, Integer, Integer, Double>> winnersVectorsWithoutRanking;
-
 		// (rank average, rank evolution, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
-		DataSet<Tuple8<Double, Double, Double, Double, Double, Double, Double, Double>> winnerVectorWithRanking;
+		DataSet<Tuple8<Double, Double, Double, Double, Double, Double, Double, Double>> winnerVector;
 		// (win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
-		DataSet<Tuple6<Double, Double, Double, Double, Double, Double>> winnerVectorWithoutRanking;
+		DataSet<Tuple6<Double, Double, Double, Double, Double, Double>> winnerVectorNoRanking;
 
 
 
-		// ----- COMPETITORS VECTORS -----
-
-		// (team, edition, rank average, rank evolution, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
-		DataSet<Tuple10<String, Integer, Double, Integer, Double, Double, Double, Integer, Integer, Double>> competitorsVectorsWithRanking;
-		// (team, edition, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
-		DataSet<Tuple8<String, Integer, Double, Double, Double, Integer, Integer, Double>> competitorsVectorsWithoutRanking;
+		// ----- COSINE SIMILARITY -----
 
 		// (team, edition, cosine similarity)
-		DataSet<Tuple3<String, Integer, Double>> competitorsCosineWithRanking;
+		DataSet<Tuple3<String, Integer, Double>> cosineSimilarity;
 		// (team, edition, cosine similarity)
-		DataSet<Tuple3<String, Integer, Double>> competitorsCosineWithoutRanking;
+		DataSet<Tuple3<String, Integer, Double>> cosineSimilarityNoRanking;
 
 
 
@@ -114,59 +114,55 @@ public class BatchJob {
 				.groupBy(0,1)
 				.reduceGroup(new WorldcupHistoryEliminatesDouble());
 
-		winners = env.readCsvFile(Settings.worldcupHistoryPath)
-				.ignoreFirstLine()
-				.types(Integer.class, String.class, String.class, String.class, String.class, String.class, Integer.class, Integer.class, Integer.class, Float.class)
-				.flatMap(new WorldcupWinners());
 
-		winnersVectorsWithRanking = fifaRanks.join(internationalResults)
-				.where(0, 1)
-				.equalTo(0, 1)
-				.with(new JoinRanksAndResults())
-				.join(worldcupHistory)
-				.where(0, 1)
-				.equalTo(0, 1)
-				.with(new FinalistsVectorsWithRanking())
-				.join(winners)
-				.where(0, 1)
-				.equalTo(0, 1)
-				.with(new WinnersVectorsWithRanking());
 
-		winnersVectorsWithoutRanking = internationalResults.join(worldcupHistory)
-				.where(0, 1)
-				.equalTo(0, 1)
-				.with(new FinalistsVectorsWithoutRanking())
-				.join(winners)
-				.where(0, 1)
-				.equalTo(0, 1)
-				.with(new WinnersVectorsWithoutRanking());
-
-		winnerVectorWithRanking = winnersVectorsWithRanking
-				.reduceGroup(new WinnersVectorsWithRankingReduce());
-
-		winnerVectorWithoutRanking = winnersVectorsWithoutRanking
-				.reduceGroup(new WinnersVectorsWithoutRankingReduce());
-
-		competitorsVectorsWithRanking = fifaRanks.join(internationalResults.filter(new FilterWorldcupEdition()))
+		allVectors = fifaRanks.join(internationalResults)
 				.where(0, 1)
 				.equalTo(0, 1)
 				.with(new JoinRanksAndResults())
 				.join(worldcupHistory)
 				.where(0,1)
 				.equalTo(0,1)
-				.with(new CompetitorsVectorsWithRanking());
+				.with(new Vectors());
 
-		competitorsVectorsWithoutRanking = competitorsVectorsWithRanking
-				.map(new CompetitorsVectorsWithoutRanking());
+		allVectorsNoRanking = allVectors
+				.map(new VectorsNoRanking());
 
-		competitorsCosineWithRanking = competitorsVectorsWithRanking
-				.map(new CompetitorsVectorsWithRankingNormalize())
-				.map(new CompetitorsVectorsWithRankingCosineSimilarity())
+
+
+		winners = env.readCsvFile(Settings.worldcupHistoryPath)
+				.ignoreFirstLine()
+				.types(Integer.class, String.class, String.class, String.class, String.class, String.class, Integer.class, Integer.class, Integer.class, Float.class)
+				.flatMap(new WorldcupWinners());
+
+		winnerVector = allVectors
+				.join(winners)
+				.where(0,1)
+				.equalTo(0,1)
+				.with(new JoinWinners())
+				.reduceGroup(new WinnerReduce());
+
+		winnerVectorNoRanking = allVectors
+				.join(winners)
+				.where(0,1)
+				.equalTo(0,1)
+				.with(new JoinWinners())
+				.map(new VectorsNoRanking())
+				.reduceGroup(new WinnerNoRankingReduce());
+
+
+
+		cosineSimilarity = allVectors
+				.filter(new FilterWorldcupEdition())
+				.map(new Normalize())
+				.map(new CosineSimilarity())
 				.sortPartition(2, Order.ASCENDING);
 
-		competitorsCosineWithoutRanking = competitorsVectorsWithoutRanking
-				.map(new CompetitorsVectorsWithoutRankingNormalize())
-				.map(new CompetitorsVectorsWithoutRankingCosineSimilarity())
+		cosineSimilarityNoRanking = allVectors
+				.filter(new FilterWorldcupEdition())
+				.map(new VectorsNoRanking())
+				.map(new NormalizeNoRanking())
+				.map(new CosineSimilarityNoRanking())
 				.sortPartition(2, Order.ASCENDING);
 
 
@@ -174,23 +170,28 @@ public class BatchJob {
 
 
 		//internationalResults.print();
-		fifaRanks.print();
+		//fifaRanks.print();
 		//worldcupHistory.print();
+
+		//allVectors.print();
+		//allVectorsNoRanking.print();
+
 		//winners.print();
-		//winnersVectorsWithRanking.print();
-		//winnerVectorWithRanking.print();
-		//winnersVectorsWithoutRanking.print();
-		//winnerVectorWithoutRanking.print();
-		//competitorsVectorsWithRanking.print();
-		//competitorsVectorsWithoutRanking.print();
-		//competitorsCosineWithRanking.print();
-		//competitorsCosineWithoutRanking.print();
+		//winnerVector.print();
+		winnerVectorNoRanking.print();
+
+		//cosineSimilarity.print();
+		//cosineSimilarityNoRanking.print();
 	}
+
+
+
+
 
 	// Winner vector with ranking (since 1994)
 	// (0.49893470671731455,0.7290825086499529,0.07050037474835713,0.012528329017067418,0.07742714687235631,0.39121500464143816,0.23117250274266798,0.04348244694445422)
 
 	// Winner vector without ranking (since 1930)
-	// (0.2344814297436818,0.05998193940435631,0.25814814697962074,0.8069480544688464,0.45038961179656545,0.14409786686943687)
+	// (0.15047742117059268,0.02674071802872144,0.16526206323776177,0.8350171929129622,0.4934192503576595,0.09280981137679788)
 
 }

@@ -1,10 +1,10 @@
-package insa.rennes.competitors;
+package insa.rennes.vectors;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple10;
 import org.apache.flink.api.java.tuple.Tuple8;
 
-public class CompetitorsVectorsWithoutRanking implements MapFunction<
+public class VectorsNoRanking implements MapFunction<
         Tuple10<String, Integer,Double, Integer, Double, Double, Double, Integer, Integer, Double>,
         Tuple8<String, Integer, Double, Double, Double, Integer, Integer, Double>> {
     @Override

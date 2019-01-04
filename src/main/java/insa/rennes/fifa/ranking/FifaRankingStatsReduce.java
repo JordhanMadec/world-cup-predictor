@@ -1,4 +1,4 @@
-package insa.rennes.fifaRanking;
+package insa.rennes.fifa.ranking;
 
 import org.apache.flink.api.common.functions.GroupReduceFunction;
 import org.apache.flink.api.java.tuple.Tuple4;
