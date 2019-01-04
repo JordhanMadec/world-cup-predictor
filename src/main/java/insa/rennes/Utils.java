@@ -3,9 +3,7 @@ package insa.rennes;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 public class Utils {
     private static final int[] EDITIONS = {
@@ -14,7 +12,7 @@ public class Utils {
 
     public static int getWorldCupEdition(int year) {
         for (int edition: EDITIONS) {
-            if (year <= edition && edition - year < 4) return edition;
+            if (year <= edition && edition - year < Settings.YEARS_BEFORE_EDITION) return edition;
         }
 
         return 0;

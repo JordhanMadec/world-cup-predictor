@@ -174,7 +174,7 @@ public class BatchJob {
 
 
 		//internationalResults.print();
-		//fifaRanks.print();
+		fifaRanks.print();
 		//worldcupHistory.print();
 		//winners.print();
 		//winnersVectorsWithRanking.print();
@@ -183,8 +183,8 @@ public class BatchJob {
 		//winnerVectorWithoutRanking.print();
 		//competitorsVectorsWithRanking.print();
 		//competitorsVectorsWithoutRanking.print();
-		competitorsCosineWithRanking.max(2).print();
-		competitorsCosineWithoutRanking.max(2).print();
+		//competitorsCosineWithRanking.print();
+		//competitorsCosineWithoutRanking.print();
 	}
 
 	// Winner vector with ranking (since 1994)
