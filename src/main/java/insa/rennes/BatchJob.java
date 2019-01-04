@@ -18,8 +18,7 @@
 
 package insa.rennes;
 
-import insa.rennes.competitors.CompetitorsVectorsWithRanking;
-import insa.rennes.competitors.FilterWorldcupEdition;
+import insa.rennes.competitors.*;
 import insa.rennes.fifaRanking.FifaRankingDateConverter;
 import insa.rennes.fifaRanking.FifaRankingStats;
 import insa.rennes.fifaRanking.FifaRankingStatsReduce;
@@ -77,6 +76,11 @@ public class BatchJob {
 		DataSet<Tuple10<String, Integer, Double, Integer, Double, Double, Double, Integer, Integer, Double>> competitorsVectorsWithRanking;
 		// (team, edition, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
 		DataSet<Tuple8<String, Integer, Double, Double, Double, Integer, Integer, Double>> competitorsVectorsWithoutRanking;
+
+		// (team, edition, cosine similarity)
+		DataSet<Tuple3<String, Integer, Double>> competitorsCosineWithRanking;
+		// (team, edition, cosine similarity)
+		DataSet<Tuple3<String, Integer, Double>> competitorsCosineWithoutRanking;
 
 
 
@@ -152,6 +156,19 @@ public class BatchJob {
 				.equalTo(0,1)
 				.with(new CompetitorsVectorsWithRanking());
 
+		competitorsVectorsWithoutRanking = competitorsVectorsWithRanking
+				.map(new CompetitorsVectorsWithoutRanking());
+
+		competitorsCosineWithRanking = competitorsVectorsWithRanking
+				.map(new CompetitorsVectorsWithRankingNormalize())
+				.map(new CompetitorsVectorsWithRankingCosineSimilarity())
+				.sortPartition(2, Order.ASCENDING);
+
+		competitorsCosineWithoutRanking = competitorsVectorsWithoutRanking
+				.map(new CompetitorsVectorsWithoutRankingNormalize())
+				.map(new CompetitorsVectorsWithoutRankingCosineSimilarity())
+				.sortPartition(2, Order.ASCENDING);
+
 
 
 
@@ -164,7 +181,10 @@ public class BatchJob {
 		//winnerVectorWithRanking.print();
 		//winnersVectorsWithoutRanking.print();
 		//winnerVectorWithoutRanking.print();
-		competitorsVectorsWithRanking.print();
+		//competitorsVectorsWithRanking.print();
+		//competitorsVectorsWithoutRanking.print();
+		competitorsCosineWithRanking.max(2).print();
+		competitorsCosineWithoutRanking.max(2).print();
 	}
 
 	// Winner vector with ranking (since 1994)
