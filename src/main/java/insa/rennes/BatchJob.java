@@ -18,6 +18,7 @@
 
 package insa.rennes;
 
+import insa.rennes.competitors.CompetitorsVectorsWithRanking;
 import insa.rennes.competitors.FilterWorldcupEdition;
 import insa.rennes.fifaRanking.FifaRankingDateConverter;
 import insa.rennes.fifaRanking.FifaRankingStats;
@@ -140,22 +141,28 @@ public class BatchJob {
 		winnerVectorWithoutRanking = winnersVectorsWithoutRanking
 				.reduceGroup(new WinnersVectorsWithoutRankingReduce());
 
-		competitorsVectorsWithRanking = fifaRanks.join(internationalResults.filter(new FilterWorldcupEdition()))
+		/*competitorsVectorsWithRanking = fifaRanks.join(internationalResults.filter(new FilterWorldcupEdition()))
 				.where(0, 1)
 				.equalTo(0, 1)
-				.with(new JoinRanksAndResults());
+				.with(new JoinRanksAndResults())
+				.join(worldcupHistory)
+				.where(0,1)
+				.equalTo(0,1)
+				.with(new CompetitorsVectorsWithRanking())*/;
+
+
 
 
 
 		//internationalResults.print();
 		//fifaRanks.print();
-		//worldcupHistory.print();
+		worldcupHistory.print();
 		//winners.print();
 		//winnersVectorsWithRanking.print();
 		//winnerVectorWithRanking.print();
 		//winnersVectorsWithoutRanking.print();
 		//winnerVectorWithoutRanking.print();
-		competitorsVectorsWithRanking.print();
+		//competitorsVectorsWithRanking.print();
 	}
 
 	// Winner vector with ranking (since 1994)

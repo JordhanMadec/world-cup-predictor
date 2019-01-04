@@ -1,4 +1,4 @@
-package insa.rennes.vectors;
+package insa.rennes.winners;
 
 import org.apache.flink.api.common.functions.JoinFunction;
 import org.apache.flink.api.java.tuple.Tuple8;
