@@ -24,7 +24,7 @@ public class CosineSimilarity implements MapFunction<
                 + in.f5 * winnerVector[3]
                 + in.f6 * winnerVector[4];
 
-        similarity = Math.abs(similarity / (Math.sqrt(sumCompetitor) * Math.sqrt(sumWinner)));
+        similarity = similarity / (Math.sqrt(sumCompetitor) * Math.sqrt(sumWinner));
 
         return new Tuple3(in.f0, in.f1, similarity);
     }

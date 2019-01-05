@@ -183,7 +183,7 @@ public class BatchJob {
 		//winnerVectorNoRanking.print();
 
 		//cosineSimilarity.print();
-		//cosineSimilarityNoRanking.print();
+		cosineSimilarityNoRanking.print();
 	}
 
 

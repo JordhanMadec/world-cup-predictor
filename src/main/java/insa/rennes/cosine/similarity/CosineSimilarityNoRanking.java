@@ -23,7 +23,7 @@ public class CosineSimilarityNoRanking implements MapFunction<
                 + in.f4 * winnerVector[2]
                 + in.f5 * winnerVector[3];
 
-        Math.abs(similarity = similarity / (Math.sqrt(sumCompetitor) * Math.sqrt(sumWinner)));
+        similarity = similarity / (Math.sqrt(sumCompetitor) * Math.sqrt(sumWinner));
 
         return new Tuple3(in.f0, in.f1, similarity);
     }
