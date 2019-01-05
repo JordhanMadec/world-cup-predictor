@@ -56,8 +56,8 @@ public class BatchJob {
 
 		// ----- ALL VECTORS -----
 
-		// (team, edition, rank average, rank evolution, win ratio, loss ratio, goals ratio, finals ratio)
-		DataSet<Tuple8<String, Integer, Double, Integer, Double, Double, Double, Double>> allVectors;
+		// (team, edition, rank weight, win ratio, loss ratio, goals ratio, finals ratio)
+		DataSet<Tuple7<String, Integer, Double, Double, Double, Double, Double>> allVectors;
 		// (team, edition, win ratio, loss ratio, goals ratio, finals ratio)
 		DataSet<Tuple6<String, Integer, Double, Double, Double, Double>> allVectorsNoRanking;
 
@@ -69,7 +69,7 @@ public class BatchJob {
 		DataSet<Tuple2<String, Integer>> winners;
 
 		// (rank average, rank evolution, win ratio, loss ratio, goals ratio, finals ratio)
-		DataSet<Tuple6<Double, Double, Double, Double, Double, Double>> winnerVector;
+		DataSet<Tuple5<Double, Double, Double, Double, Double>> winnerVector;
 		// (win ratio, loss ratio, goals ratio, finals ratio)
 		DataSet<Tuple4<Double, Double, Double, Double>> winnerVectorNoRanking;
 
@@ -140,6 +140,7 @@ public class BatchJob {
 				.where(0,1)
 				.equalTo(0,1)
 				.with(new JoinWinners())
+				.map(new Normalize())
 				.reduceGroup(new WinnerReduce());
 
 		winnerVectorNoRanking = allVectors
@@ -148,6 +149,7 @@ public class BatchJob {
 				.equalTo(0,1)
 				.with(new JoinWinners())
 				.map(new VectorsNoRanking())
+				.map(new NormalizeNoRanking())
 				.reduceGroup(new WinnerNoRankingReduce());
 
 
@@ -180,7 +182,7 @@ public class BatchJob {
 		//winnerVector.print();
 		//winnerVectorNoRanking.print();
 
-		cosineSimilarity.print();
+		//cosineSimilarity.print();
 		//cosineSimilarityNoRanking.print();
 	}
 
@@ -189,9 +191,9 @@ public class BatchJob {
 
 
 	// Winner vector with ranking (since 1994)
-	// (0.49893470671731455,0.7290825086499529,0.07050037474835713,0.012528329017067418,0.07742714687235631,0.39121500464143816,0.23117250274266798,0.04348244694445422)
+	// (0.6665726869675636,0.3806526082721014,0.072269543377794,0.41685277940666615,0.24446843368817164)
 
 	// Winner vector without ranking (since 1930)
-	// (0.15047742117059268,0.02674071802872144,0.16526206323776177,0.8350171929129622,0.4934192503576595,0.09280981137679788)
+	// (0.5944162305332069,0.1043630323651175,0.6536203963320645,0.35786407241353385)
 
 }

@@ -36,13 +36,6 @@ public class WinnerNoRankingReduce implements GroupReduceFunction<
         goalsRatio /= nbWinners;
         finalsRatio /= nbWinners;
 
-        double norm = Math.sqrt(winRatio*winRatio + lossRatio*lossRatio + goalsRatio*goalsRatio + finalsRatio*finalsRatio);
-
-        winRatio /= norm;
-        lossRatio /= norm;
-        goalsRatio /= norm;
-        finalsRatio /= norm;
-
         // (rank average, rank evolution, win ratio, loss ratio, goals ratio, finals ratio)
         out.collect(new Tuple4(winRatio, lossRatio, goalsRatio, finalsRatio));
     }

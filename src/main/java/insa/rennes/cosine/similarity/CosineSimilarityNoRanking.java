@@ -11,7 +11,7 @@ public class CosineSimilarityNoRanking implements MapFunction<
     public Tuple3<String, Integer, Double> map(
             Tuple6<String, Integer, Double, Double, Double, Double> in
     ) throws Exception {
-        final double[] winnerVector = { 0.15047742117059268,0.02674071802872144,0.16526206323776177,0.09280981137679788 };
+        final double[] winnerVector = { 0.5944162305332069,0.1043630323651175,0.6536203963320645,0.35786407241353385 };
 
         double sumCompetitor = in.f2 * in.f2 + in.f3 * in.f3 + in.f4 * in.f4 + in.f5 * in.f5;
 
@@ -23,7 +23,7 @@ public class CosineSimilarityNoRanking implements MapFunction<
                 + in.f4 * winnerVector[2]
                 + in.f5 * winnerVector[3];
 
-        similarity = similarity / (Math.sqrt(sumCompetitor) * Math.sqrt(sumWinner));
+        Math.abs(similarity = similarity / (Math.sqrt(sumCompetitor) * Math.sqrt(sumWinner)));
 
         return new Tuple3(in.f0, in.f1, similarity);
     }
