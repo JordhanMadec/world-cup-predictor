@@ -155,7 +155,7 @@ public class BatchJob {
 
 
 		cosineSimilarity = allVectors
-				.filter(new FilterWorldcupEdition())
+				//.filter(new FilterWorldcupEdition())
 				.map(new Normalize())
 				.map(new CosineSimilarity())
 				.sortPartition(2, Order.DESCENDING)
@@ -184,8 +184,11 @@ public class BatchJob {
 		//winnerVector.print();
 		//winnerVectorNoRanking.print();
 
-		cosineSimilarity.first(20).print();
+		//cosineSimilarity.first(20).print();
 		//cosineSimilarityNoRanking.first(20).print();
+
+		cosineSimilarity.writeAsCsv("file:///Users/jordhanmadec/dev/INSA/world-cup-predictor/worldcup_predictions.csv", "\n", ",");
+		env.execute("Worldcup Predicts");
 	}
 
 
