@@ -12,7 +12,7 @@ public class Utils {
 
     public static int getWorldCupEdition(int year) {
         for (int edition: EDITIONS) {
-            if (year <= edition && edition - year < Settings.YEARS_BEFORE_EDITION) return edition;
+            if (year <= edition - 1 && edition - 1 - year < Settings.YEARS_BEFORE_EDITION) return edition;
         }
 
         return 0;

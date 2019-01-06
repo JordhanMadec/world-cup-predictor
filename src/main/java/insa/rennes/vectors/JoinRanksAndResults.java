@@ -18,6 +18,9 @@ public class JoinRanksAndResults implements JoinFunction<
         double rank = in1.f2;
         int rankEvolution = in1.f3;
 
-        return new Tuple6(in1.f0, in1.f1, rankEvolution / rank, in2.f2, in2.f3, in2.f4);
+        rankEvolution = rankEvolution == 0 ? 1 : rankEvolution;
+        double rankWeight = rankEvolution / Math.exp(rank);
+
+        return new Tuple6(in1.f0, in1.f1, rankWeight, in2.f2, in2.f3, in2.f4);
     }
 }

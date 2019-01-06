@@ -184,8 +184,8 @@ public class BatchJob {
 		//winnerVector.print();
 		//winnerVectorNoRanking.print();
 
-		//cosineSimilarity.first(10).print();
-		cosineSimilarityNoRanking.first(10).print();
+		cosineSimilarity.first(20).print();
+		//cosineSimilarityNoRanking.first(20).print();
 	}
 
 
@@ -193,9 +193,9 @@ public class BatchJob {
 
 
 	// Winner vector with ranking (since 1994)
-	// (0.6665726869675636,0.3806526082721014,0.072269543377794,0.41685277940666615,0.24446843368817164)
+	// (0.3228116974677028,0.3954465129387113,0.07277102207557028,0.4352775179447817,0.6763054722429234)
 
 	// Winner vector without ranking (since 1930)
-	// (0.5944162305332069,0.1043630323651175,0.6536203963320645,0.35786407241353385)
+	// (0.4381281368024962,0.08053396167000945,0.48165831528521147,0.7475422079346349)
 
 }
