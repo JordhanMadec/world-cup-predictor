@@ -56,10 +56,10 @@ public class BatchJob {
 
 		// ----- ALL VECTORS -----
 
-		// (team, edition, rank average, rank evolution, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
-		DataSet<Tuple10<String, Integer, Double, Integer, Double, Double, Double, Integer, Integer, Double>> allVectors;
-		// (team, edition, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
-		DataSet<Tuple8<String, Integer, Double, Double, Double, Integer, Integer, Double>> allVectorsNoRanking;
+		// (team, edition, rank weight, win ratio, loss ratio, goals ratio, finals ratio)
+		DataSet<Tuple7<String, Integer, Double, Double, Double, Double, Double>> allVectors;
+		// (team, edition, win ratio, loss ratio, goals ratio, finals ratio)
+		DataSet<Tuple6<String, Integer, Double, Double, Double, Double>> allVectorsNoRanking;
 
 
 
@@ -68,10 +68,10 @@ public class BatchJob {
 		// (team, edition)
 		DataSet<Tuple2<String, Integer>> winners;
 
-		// (rank average, rank evolution, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
-		DataSet<Tuple8<Double, Double, Double, Double, Double, Double, Double, Double>> winnerVector;
-		// (win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
-		DataSet<Tuple6<Double, Double, Double, Double, Double, Double>> winnerVectorNoRanking;
+		// (rank weight, win ratio, loss ratio, goals ratio, finals ratio)
+		DataSet<Tuple5<Double, Double, Double, Double, Double>> winnerVector;
+		// (win ratio, loss ratio, goals ratio, finals ratio)
+		DataSet<Tuple4<Double, Double, Double, Double>> winnerVectorNoRanking;
 
 
 
@@ -140,6 +140,7 @@ public class BatchJob {
 				.where(0,1)
 				.equalTo(0,1)
 				.with(new JoinWinners())
+				.map(new Normalize())
 				.reduceGroup(new WinnerReduce());
 
 		winnerVectorNoRanking = allVectors
@@ -148,22 +149,25 @@ public class BatchJob {
 				.equalTo(0,1)
 				.with(new JoinWinners())
 				.map(new VectorsNoRanking())
+				.map(new NormalizeNoRanking())
 				.reduceGroup(new WinnerNoRankingReduce());
 
 
 
 		cosineSimilarity = allVectors
-				.filter(new FilterWorldcupEdition())
+				//.filter(new FilterWorldcupEdition())
 				.map(new Normalize())
 				.map(new CosineSimilarity())
-				.sortPartition(2, Order.ASCENDING);
+				.sortPartition(2, Order.DESCENDING)
+				.setParallelism(1);
 
 		cosineSimilarityNoRanking = allVectors
 				.filter(new FilterWorldcupEdition())
 				.map(new VectorsNoRanking())
 				.map(new NormalizeNoRanking())
 				.map(new CosineSimilarityNoRanking())
-				.sortPartition(2, Order.ASCENDING);
+				.sortPartition(2, Order.DESCENDING)
+				.setParallelism(1);
 
 
 
@@ -178,10 +182,13 @@ public class BatchJob {
 
 		//winners.print();
 		//winnerVector.print();
-		winnerVectorNoRanking.print();
+		//winnerVectorNoRanking.print();
 
-		//cosineSimilarity.print();
-		//cosineSimilarityNoRanking.print();
+		//cosineSimilarity.first(20).print();
+		//cosineSimilarityNoRanking.first(20).print();
+
+		cosineSimilarity.writeAsCsv("file:///Users/jordhanmadec/dev/INSA/world-cup-predictor/worldcup_predictions.csv", "\n", ",");
+		env.execute("Worldcup Predicts");
 	}
 
 
@@ -189,9 +196,9 @@ public class BatchJob {
 
 
 	// Winner vector with ranking (since 1994)
-	// (0.49893470671731455,0.7290825086499529,0.07050037474835713,0.012528329017067418,0.07742714687235631,0.39121500464143816,0.23117250274266798,0.04348244694445422)
+	// (0.3228116974677028,0.3954465129387113,0.07277102207557028,0.4352775179447817,0.6763054722429234)
 
 	// Winner vector without ranking (since 1930)
-	// (0.15047742117059268,0.02674071802872144,0.16526206323776177,0.8350171929129622,0.4934192503576595,0.09280981137679788)
+	// (0.4381281368024962,0.08053396167000945,0.48165831528521147,0.7475422079346349)
 
 }

@@ -2,35 +2,31 @@ package insa.rennes.winners;
 
 import org.apache.flink.api.common.functions.GroupReduceFunction;
 import org.apache.flink.api.java.tuple.Tuple6;
-import org.apache.flink.api.java.tuple.Tuple8;
+import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.util.Collector;
 
 public class WinnerNoRankingReduce implements GroupReduceFunction<
-        Tuple8<String, Integer, Double, Double, Double, Integer, Integer, Double>,
-        Tuple6<Double, Double, Double, Double, Double, Double>> {
+        Tuple6<String, Integer, Double, Double, Double, Double>,
+        Tuple4<Double, Double, Double, Double>> {
 
     @Override
     public void reduce(
-            Iterable<Tuple8<String, Integer, Double, Double, Double, Integer, Integer, Double>> in,
-            Collector<Tuple6<Double, Double, Double, Double, Double, Double>> out
+            Iterable<Tuple6<String, Integer, Double, Double, Double, Double>> in,
+            Collector<Tuple4<Double, Double, Double, Double>> out
     ) throws Exception {
 
         double winRatio = 0.0;
         double lossRatio = 0.0;
         double goalsRatio = 0.0;
-        double finalsPlayed = 0.0;
-        double finalsWon = 0.0;
         double finalsRatio = 0.0;
 
         int nbWinners = 0;
 
-        for (Tuple8<String, Integer, Double, Double, Double, Integer, Integer, Double> tuple: in) {
+        for (Tuple6<String, Integer, Double, Double, Double, Double> tuple: in) {
             winRatio += tuple.f2;
             lossRatio += tuple.f3;
             goalsRatio += tuple.f4;
-            finalsPlayed += tuple.f5;
-            finalsWon += tuple.f6;
-            finalsRatio += tuple.f7;
+            finalsRatio += tuple.f5;
 
             nbWinners++;
         }
@@ -38,20 +34,9 @@ public class WinnerNoRankingReduce implements GroupReduceFunction<
         winRatio /= nbWinners;
         lossRatio /= nbWinners;
         goalsRatio /= nbWinners;
-        finalsPlayed /= nbWinners;
-        finalsWon /= nbWinners;
         finalsRatio /= nbWinners;
 
-        double norm = Math.sqrt(winRatio*winRatio + lossRatio*lossRatio + goalsRatio*goalsRatio + finalsPlayed*finalsPlayed + finalsWon*finalsWon + finalsRatio*finalsRatio);
-
-        winRatio /= norm;
-        lossRatio /= norm;
-        goalsRatio /= norm;
-        finalsPlayed /= norm;
-        finalsWon /= norm;
-        finalsRatio /= norm;
-
-        // (rank average, rank evolution, win ratio, loss ratio, goals ratio, finals played, finals won, ratio)
-        out.collect(new Tuple6(winRatio, lossRatio, goalsRatio, finalsPlayed, finalsWon, finalsRatio));
+        // (rank average, rank evolution, win ratio, loss ratio, goals ratio, finals ratio)
+        out.collect(new Tuple4(winRatio, lossRatio, goalsRatio, finalsRatio));
     }
 }
