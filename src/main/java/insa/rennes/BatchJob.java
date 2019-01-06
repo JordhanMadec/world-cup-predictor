@@ -68,7 +68,7 @@ public class BatchJob {
 		// (team, edition)
 		DataSet<Tuple2<String, Integer>> winners;
 
-		// (rank average, rank evolution, win ratio, loss ratio, goals ratio, finals ratio)
+		// (rank weight, win ratio, loss ratio, goals ratio, finals ratio)
 		DataSet<Tuple5<Double, Double, Double, Double, Double>> winnerVector;
 		// (win ratio, loss ratio, goals ratio, finals ratio)
 		DataSet<Tuple4<Double, Double, Double, Double>> winnerVectorNoRanking;
@@ -158,14 +158,16 @@ public class BatchJob {
 				.filter(new FilterWorldcupEdition())
 				.map(new Normalize())
 				.map(new CosineSimilarity())
-				.sortPartition(2, Order.ASCENDING);
+				.sortPartition(2, Order.DESCENDING)
+				.setParallelism(1);
 
 		cosineSimilarityNoRanking = allVectors
 				.filter(new FilterWorldcupEdition())
 				.map(new VectorsNoRanking())
 				.map(new NormalizeNoRanking())
 				.map(new CosineSimilarityNoRanking())
-				.sortPartition(2, Order.ASCENDING);
+				.sortPartition(2, Order.DESCENDING)
+				.setParallelism(1);
 
 
 
@@ -182,8 +184,8 @@ public class BatchJob {
 		//winnerVector.print();
 		//winnerVectorNoRanking.print();
 
-		//cosineSimilarity.print();
-		cosineSimilarityNoRanking.print();
+		//cosineSimilarity.first(10).print();
+		cosineSimilarityNoRanking.first(10).print();
 	}
 
 
