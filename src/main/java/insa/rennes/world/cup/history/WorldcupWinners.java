@@ -10,7 +10,7 @@ public class WorldcupWinners implements FlatMapFunction<Tuple10<Integer, String,
     @Override
     public void flatMap(Tuple10<Integer, String, String, String, String, String, Integer, Integer, Integer, Float> in, Collector<Tuple2<String, Integer>> out) throws Exception {
         // (team, edition, finals played, finals won)
-        int edition = Utils.getWorldCupEdition(in.f0);
+        int edition = Utils.getWorldCupEdition(in.f0 - 1);
 
         out.collect(new Tuple2(in.f2, edition));
     }

@@ -49,17 +49,17 @@ public class BatchJob {
 		DataSet<Tuple4<String, Integer, Double, Integer>> fifaRanks;
 		// (team, edition, win ratio, loss ratio, goals ratio)
 		DataSet<Tuple5<String, Integer, Double, Double, Double>> internationalResults;
-		// (team, edition, finals played, finals won, ratio)
-		DataSet<Tuple5<String, Integer, Integer, Integer, Double>> worldcupHistory;
+		// (team, edition, finals ratio, semi finals ratio)
+		DataSet<Tuple4<String, Integer, Double, Double>> worldcupHistory;
 
 
 
 		// ----- ALL VECTORS -----
 
-		// (team, edition, rank weight, win ratio, loss ratio, goals ratio, finals ratio)
-		DataSet<Tuple7<String, Integer, Double, Double, Double, Double, Double>> allVectors;
-		// (team, edition, win ratio, loss ratio, goals ratio, finals ratio)
-		DataSet<Tuple6<String, Integer, Double, Double, Double, Double>> allVectorsNoRanking;
+		// (team, edition, rank weight, win ratio, loss ratio, goals ratio, finals ratio, semi finals ratio)
+		DataSet<Tuple8<String, Integer, Double, Double, Double, Double, Double, Double>> allVectors;
+		// (team, edition, win ratio, loss ratio, goals ratio, finals ratio, semi finals ratio)
+		DataSet<Tuple7<String, Integer, Double, Double, Double, Double, Double>> allVectorsNoRanking;
 
 
 
@@ -68,10 +68,10 @@ public class BatchJob {
 		// (team, edition)
 		DataSet<Tuple2<String, Integer>> winners;
 
-		// (rank weight, win ratio, loss ratio, goals ratio, finals ratio)
-		DataSet<Tuple5<Double, Double, Double, Double, Double>> winnerVector;
-		// (win ratio, loss ratio, goals ratio, finals ratio)
-		DataSet<Tuple4<Double, Double, Double, Double>> winnerVectorNoRanking;
+		// (rank weight, win ratio, loss ratio, goals ratio, finals ratio, semi finals ratio)
+		DataSet<Tuple6<Double, Double, Double, Double, Double, Double>> winnerVector;
+		// (win ratio, loss ratio, goals ratio, finals ratio, semi finals ratio)
+		DataSet<Tuple5<Double, Double, Double, Double, Double>> winnerVectorNoRanking;
 
 
 
@@ -196,9 +196,9 @@ public class BatchJob {
 
 
 	// Winner vector with ranking (since 1994)
-	// (0.3228116974677028,0.3954465129387113,0.07277102207557028,0.4352775179447817,0.6763054722429234)
+	// (0.021958816901128827,0.5463012214106105,0.1271657951548444,0.6253181209341707,0.3618595676038736,0.21318429150103246)
 
 	// Winner vector without ranking (since 1930)
-	// (0.4381281368024962,0.08053396167000945,0.48165831528521147,0.7475422079346349)
+	// (0.5426847822708153,0.12378319465552902,0.61986720916081,0.41307955459901263)
 
 }
