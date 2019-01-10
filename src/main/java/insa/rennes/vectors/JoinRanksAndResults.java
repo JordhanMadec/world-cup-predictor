@@ -16,9 +16,9 @@ public class JoinRanksAndResults implements JoinFunction<
             Tuple5<String, Integer, Double, Double, Double> in2
     ) throws Exception {
         double rank = in1.f2;
-        int rankEvolution = in1.f3;
+        double rankEvolution = in1.f3 * 1.0;
 
-        rankEvolution = rankEvolution == 0 ? 1 : rankEvolution;
+        rankEvolution = rankEvolution == 0.0 ? 1.0 : rankEvolution;
         double rankWeight = rankEvolution / Math.exp(rank);
 
         return new Tuple6(in1.f0, in1.f1, rankWeight, in2.f2, in2.f3, in2.f4);
