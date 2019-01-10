@@ -155,14 +155,16 @@ public class BatchJob {
 
 
 		cosineSimilarity = allVectors
-				//.filter(new FilterWorldcupEdition())
 				.map(new Normalize())
-				.map(new CosineSimilarity())
+				//.filter(new FilterWorldcupEdition())
+				.cross(winnerVector)
+				.with(new CosineSimilarityAuto())
+				//.map(new CosineSimilarity())
 				.sortPartition(2, Order.DESCENDING)
 				.setParallelism(1);
 
 		cosineSimilarityNoRanking = allVectors
-				.filter(new FilterWorldcupEdition())
+				//.filter(new FilterWorldcupEdition())
 				.map(new VectorsNoRanking())
 				.map(new NormalizeNoRanking())
 				.map(new CosineSimilarityNoRanking())
@@ -181,6 +183,7 @@ public class BatchJob {
 		//allVectorsNoRanking.print();
 
 		//winners.print();
+
 		//winnerVector.print();
 		//winnerVectorNoRanking.print();
 

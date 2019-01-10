@@ -11,7 +11,7 @@ public class CosineSimilarity implements MapFunction<
     public Tuple3<String, Integer, Double> map(
             Tuple8<String, Integer, Double, Double, Double, Double, Double, Double> in
     ) throws Exception {
-        final double[] winnerVector = { 0.021958816901128827,0.5463012214106105,0.1271657951548444,0.6253181209341707,0.3618595676038736,0.21318429150103246 };
+        final double[] winnerVector = { 0.02250297340695942,0.6049770896782736,0.14737301783083326,0.6966904017283677,0.21633813015320522,0.12309245111950072 };
 
         double sumCompetitor = in.f2 * in.f2 + in.f3 * in.f3 + in.f4 * in.f4 + in.f5 * in.f5 + in.f6 * in.f6 + in.f7 * in.f7;
 
