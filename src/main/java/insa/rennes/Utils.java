@@ -38,4 +38,30 @@ public class Utils {
 
         return countries;
     }
+
+    public static String getHost(int edition) {
+        switch (edition) {
+            case 1930: return "Uruguay";
+            case 1934: return "Italy";
+            case 1938: return "France";
+            case 1950: return "Brazil";
+            case 1954: return "Switzerland";
+            case 1958: return "Sweden";
+            case 1962: return "Chile";
+            case 1966: return "England";
+            case 1970: return "Mexico";
+            case 1974: return "Germany";
+            case 1978: return "Argentina";
+            case 1982: return "Spain";
+            case 1986: return "Mexico";
+            case 1990: return "Italy";
+            case 1994: return "USA";
+            case 1998: return "France";
+            case 2002: return "Japan";
+            case 2006: return "Germany";
+            case 2010: return "South Africa";
+            case 2014: return "Brazil";
+            default: return "";
+        }
+    }
 }

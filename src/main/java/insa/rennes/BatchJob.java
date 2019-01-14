@@ -50,16 +50,14 @@ public class BatchJob {
 		// (team, edition, win ratio, loss ratio, goals ratio)
 		DataSet<Tuple5<String, Integer, Double, Double, Double>> internationalResults;
 		// (team, edition, finals ratio, semi finals ratio)
-		DataSet<Tuple4<String, Integer, Double, Double>> worldcupHistory;
+		DataSet<Tuple5<String, Integer, Double, Double, Double>> worldcupHistory;
 
 
 
 		// ----- ALL VECTORS -----
 
 		// (team, edition, rank weight, win ratio, loss ratio, goals ratio, finals ratio, semi finals ratio)
-		DataSet<Tuple8<String, Integer, Double, Double, Double, Double, Double, Double>> allVectors;
-		// (team, edition, win ratio, loss ratio, goals ratio, finals ratio, semi finals ratio)
-		DataSet<Tuple7<String, Integer, Double, Double, Double, Double, Double>> allVectorsNoRanking;
+		DataSet<Tuple9<String, Integer, Double, Double, Double, Double, Double, Double, Double>> allVectors;
 
 
 
@@ -69,9 +67,7 @@ public class BatchJob {
 		DataSet<Tuple2<String, Integer>> winners;
 
 		// (rank weight, win ratio, loss ratio, goals ratio, finals ratio, semi finals ratio)
-		DataSet<Tuple6<Double, Double, Double, Double, Double, Double>> winnerVector;
-		// (win ratio, loss ratio, goals ratio, finals ratio, semi finals ratio)
-		DataSet<Tuple5<Double, Double, Double, Double, Double>> winnerVectorNoRanking;
+		DataSet<Tuple7<Double, Double, Double, Double, Double, Double, Double>> winnerVector;
 
 
 
@@ -79,8 +75,6 @@ public class BatchJob {
 
 		// (team, edition, cosine similarity)
 		DataSet<Tuple3<String, Integer, Double>> cosineSimilarity;
-		// (team, edition, cosine similarity)
-		DataSet<Tuple3<String, Integer, Double>> cosineSimilarityNoRanking;
 
 
 
@@ -125,15 +119,14 @@ public class BatchJob {
 				.equalTo(0,1)
 				.with(new Vectors());
 
-		allVectorsNoRanking = allVectors
-				.map(new VectorsNoRanking());
-
 
 
 		winners = env.readCsvFile(Settings.worldcupHistoryPath)
 				.ignoreFirstLine()
 				.types(Integer.class, String.class, String.class, String.class, String.class, String.class, Integer.class, Integer.class, Integer.class, Float.class)
 				.flatMap(new WorldcupWinners());
+
+
 
 		winnerVector = allVectors
 				.join(winners)
@@ -143,31 +136,13 @@ public class BatchJob {
 				.map(new Normalize())
 				.reduceGroup(new WinnerReduce());
 
-		winnerVectorNoRanking = allVectors
-				.join(winners)
-				.where(0,1)
-				.equalTo(0,1)
-				.with(new JoinWinners())
-				.map(new VectorsNoRanking())
-				.map(new NormalizeNoRanking())
-				.reduceGroup(new WinnerNoRankingReduce());
-
 
 
 		cosineSimilarity = allVectors
 				.map(new Normalize())
 				//.filter(new FilterWorldcupEdition())
 				.cross(winnerVector)
-				.with(new CosineSimilarityAuto())
-				//.map(new CosineSimilarity())
-				.sortPartition(2, Order.DESCENDING)
-				.setParallelism(1);
-
-		cosineSimilarityNoRanking = allVectors
-				//.filter(new FilterWorldcupEdition())
-				.map(new VectorsNoRanking())
-				.map(new NormalizeNoRanking())
-				.map(new CosineSimilarityNoRanking())
+				.with(new CosineSimilarity())
 				.sortPartition(2, Order.DESCENDING)
 				.setParallelism(1);
 
@@ -180,28 +155,14 @@ public class BatchJob {
 		//worldcupHistory.print();
 
 		//allVectors.print();
-		//allVectorsNoRanking.print();
 
 		//winners.print();
 
 		//winnerVector.print();
-		//winnerVectorNoRanking.print();
 
 		//cosineSimilarity.first(20).print();
-		//cosineSimilarityNoRanking.first(20).print();
 
 		cosineSimilarity.writeAsCsv("file:///Users/jordhanmadec/dev/INSA/world-cup-predictor/worldcup_predictions.csv", "\n", ",");
-		env.execute("Worldcup Predicts");
+		env.execute("Worldcup Predictions");
 	}
-
-
-
-
-
-	// Winner vector with ranking (since 1994)
-	// (0.021958816901128827,0.5463012214106105,0.1271657951548444,0.6253181209341707,0.3618595676038736,0.21318429150103246)
-
-	// Winner vector without ranking (since 1930)
-	// (0.5426847822708153,0.12378319465552902,0.61986720916081,0.41307955459901263)
-
 }
