@@ -1,32 +1,26 @@
 package insa.rennes.cosine.similarity;
 
-import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.java.tuple.Tuple8;
+import org.apache.flink.api.common.functions.CrossFunction;
 import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.tuple.Tuple7;
+import org.apache.flink.api.java.tuple.Tuple9;
 
-public class CosineSimilarity implements MapFunction<
-        Tuple8<String, Integer, Double, Double, Double, Double, Double, Double>,
-        Tuple3<String, Integer, Double>> {
+public class CosineSimilarity implements CrossFunction<Tuple9<String, Integer, Double, Double, Double, Double, Double, Double, Double>, Tuple7<Double, Double, Double, Double, Double, Double, Double>, Tuple3<String, Integer, Double>> {
     @Override
-    public Tuple3<String, Integer, Double> map(
-            Tuple8<String, Integer, Double, Double, Double, Double, Double, Double> in
-    ) throws Exception {
-        final double[] winnerVector = { 0.02250297340695942,0.6049770896782736,0.14737301783083326,0.6966904017283677,0.21633813015320522,0.12309245111950072 };
+    public Tuple3<String, Integer, Double> cross(Tuple9<String, Integer, Double, Double, Double, Double, Double, Double, Double> challenger, Tuple7<Double, Double, Double, Double, Double, Double, Double> winner) throws Exception {
+        double sumChalleneger = challenger.f2 * challenger.f2 + challenger.f3 * challenger.f3 + challenger.f4 * challenger.f4 + challenger.f5 * challenger.f5 + challenger.f6 * challenger.f6 + challenger.f7 * challenger.f7 + challenger.f8 * challenger.f8;
+        double sumWinner = winner.f0 * winner.f0 + winner.f1 * winner.f1 + winner.f2 * winner.f2 + winner.f3 * winner.f3 + winner.f4 * winner.f4 + winner.f5 * winner.f5 + winner.f6 * winner.f6;
+        
+        double similarity = challenger.f2 * winner.f0
+                + challenger.f3 * winner.f1
+                + challenger.f4 * winner.f2
+                + challenger.f5 * winner.f3
+                + challenger.f6 * winner.f4
+                + challenger.f7 * winner.f5
+                + challenger.f8 * winner.f6;
 
-        double sumCompetitor = in.f2 * in.f2 + in.f3 * in.f3 + in.f4 * in.f4 + in.f5 * in.f5 + in.f6 * in.f6 + in.f7 * in.f7;
+        similarity = similarity / (Math.sqrt(sumChalleneger) * Math.sqrt(sumWinner));
 
-        double sumWinner = 0.0;
-        for(double i : winnerVector) sumWinner += i*i;
-
-        double similarity = in.f2 * winnerVector[0]
-                + in.f3 * winnerVector[1]
-                + in.f4 * winnerVector[2]
-                + in.f5 * winnerVector[3]
-                + in.f6 * winnerVector[4]
-                + in.f7 * winnerVector[5];
-
-        similarity = similarity / (Math.sqrt(sumCompetitor) * Math.sqrt(sumWinner));
-
-        return new Tuple3(in.f0, in.f1, similarity);
+        return new Tuple3(challenger.f0, challenger.f1, similarity);
     }
 }

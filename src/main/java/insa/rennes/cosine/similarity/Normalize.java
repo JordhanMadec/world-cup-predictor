@@ -1,18 +1,22 @@
 package insa.rennes.cosine.similarity;
 
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.java.tuple.Tuple8;
+import org.apache.flink.api.java.tuple.Tuple9;
 
 public class Normalize implements MapFunction<
-        Tuple8<String, Integer, Double, Double, Double, Double, Double, Double>,
-        Tuple8<String, Integer, Double, Double, Double, Double, Double, Double>> {
+        Tuple9<String, Integer, Double, Double, Double, Double, Double, Double, Double>,
+        Tuple9<String, Integer, Double, Double, Double, Double, Double, Double, Double>> {
     @Override
-    public Tuple8<String, Integer, Double, Double, Double, Double, Double, Double> map(
-            Tuple8<String, Integer, Double, Double, Double, Double, Double, Double> in
+    public Tuple9<String, Integer, Double, Double, Double, Double, Double, Double, Double> map(
+            Tuple9<String, Integer, Double, Double, Double, Double, Double, Double, Double> in
     ) throws Exception {
+
+
         double norm = Math.sqrt(in.f2*in.f2 + in.f3*in.f3 + in.f4*in.f4 + in.f5*in.f5 + in.f6*in.f6 + in.f7 * in.f7);
 
-        // (team, edition, rank weight, win ratio, loss ratio, goals ratio, finals ratio, semi finals ratio)
-        return new Tuple8(in.f0, in.f1, in.f2/norm, in.f3/norm, in.f4/norm, in.f5/norm, in.f6/norm, in.f7/norm);
+        // Exclude hosting
+
+        // (team, edition, rank weight, win ratio, loss ratio, goals ratio, finals ratio, semi finals ratio, hosting)
+        return new Tuple9(in.f0, in.f1, in.f2/norm, in.f3/norm, in.f4/norm, in.f5/norm, in.f6/norm, in.f7/norm, 0.0);
     }
 }
