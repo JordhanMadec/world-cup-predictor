@@ -1,18 +1,18 @@
 package insa.rennes.international.results;
 
 import org.apache.flink.api.common.functions.GroupReduceFunction;
-import org.apache.flink.api.java.tuple.Tuple5;
+import org.apache.flink.api.java.tuple.Tuple6;
 import org.apache.flink.api.java.tuple.Tuple7;
 import org.apache.flink.util.Collector;
 
 public class InternationalResultsStatsReduce implements GroupReduceFunction<
     Tuple7<String, Integer, Integer, Integer, Integer, Integer, Integer>,
-    Tuple5<String, Integer, Double, Double, Double>> {
+    Tuple6<String, Integer, Double, Double, Double, Double>> {
 
     @Override
     public void reduce(
         Iterable<Tuple7<String, Integer, Integer, Integer, Integer, Integer, Integer>> iterable,
-        Collector<Tuple5<String, Integer, Double, Double, Double>> out
+        Collector<Tuple6<String, Integer, Double, Double, Double, Double>> out
     ) throws Exception {
 
         String team = "";
@@ -33,7 +33,7 @@ public class InternationalResultsStatsReduce implements GroupReduceFunction<
             goals_against += tuple.f6 * 1.0;
         }
 
-        // (team, edition, win ratio, loss ratio, goals ratio)
-        out.collect(new Tuple5(team, year, win / (win + draw + loss), loss / (win + draw + loss), goals_for / (goals_for + goals_against)));
+        // (team, edition, win ratio, loss ratio, goals ratio, goals per match)
+        out.collect(new Tuple6(team, year, win / (win + draw + loss), loss / (win + draw + loss), goals_for / (goals_for + goals_against), goals_for / (win + draw + loss)));
     }
 }

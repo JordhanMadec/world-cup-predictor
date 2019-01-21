@@ -48,7 +48,7 @@ public class BatchJob {
 		// (team, edition, rank average, rank evolution)
 		DataSet<Tuple4<String, Integer, Double, Integer>> fifaRanks;
 		// (team, edition, win ratio, loss ratio, goals ratio)
-		DataSet<Tuple5<String, Integer, Double, Double, Double>> internationalResults;
+		DataSet<Tuple6<String, Integer, Double, Double, Double, Double>> internationalResults;
 		// (team, edition, finals ratio, semi finals ratio)
 		DataSet<Tuple5<String, Integer, Double, Double, Double>> worldcupHistory;
 
@@ -57,7 +57,7 @@ public class BatchJob {
 		// ----- ALL VECTORS -----
 
 		// (team, edition, rank weight, win ratio, loss ratio, goals ratio, finals ratio, semi finals ratio)
-		DataSet<Tuple9<String, Integer, Double, Double, Double, Double, Double, Double, Double>> allVectors;
+		DataSet<Tuple10<String, Integer, Double, Double, Double, Double, Double, Double, Double, Double>> allVectors;
 
 
 
@@ -67,7 +67,7 @@ public class BatchJob {
 		DataSet<Tuple2<String, Integer>> winners;
 
 		// (rank weight, win ratio, loss ratio, goals ratio, finals ratio, semi finals ratio)
-		DataSet<Tuple7<Double, Double, Double, Double, Double, Double, Double>> winnerVector;
+		DataSet<Tuple8<Double, Double, Double, Double, Double, Double, Double, Double>> winnerVector;
 
 
 
