@@ -12,11 +12,11 @@ public class Normalize implements MapFunction<
     ) throws Exception {
 
 
-        double norm = Math.sqrt(in.f2*in.f2 + in.f3*in.f3 + in.f4*in.f4 + in.f5*in.f5 + in.f6*in.f6 + in.f7 * in.f7 + in.f8 * in.f8);
+        double norm = Math.sqrt(in.f2*in.f2 + in.f3*in.f3 + in.f4*in.f4 + in.f5*in.f5 + in.f6*in.f6 + in.f7 * in.f7 + in.f8 * in.f8 + in.f9 * in.f9);
 
         // Exclude hosting
 
         // (team, edition, rank weight, win ratio, loss ratio, goals ratio, finals ratio, semi finals ratio, hosting)
-        return new Tuple10(in.f0, in.f1, in.f2/norm, in.f3/norm, in.f4/norm, in.f5/norm, in.f6/norm, in.f7/norm, in.f8/norm, 0.0);
+        return new Tuple10(in.f0, in.f1, in.f2/norm, in.f3/norm, in.f4/norm, in.f5/norm, in.f6/norm, in.f7/norm, in.f8/norm, in.f9/norm);
     }
 }

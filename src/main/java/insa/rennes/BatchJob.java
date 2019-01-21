@@ -56,7 +56,7 @@ public class BatchJob {
 
 		// ----- ALL VECTORS -----
 
-		// (team, edition, rank weight, win ratio, loss ratio, goals ratio, finals ratio, semi finals ratio)
+		// (team, edition, rank weight, win ratio, loss ratio, goals ratio, goals per match, finals ratio, semi finals ratio)
 		DataSet<Tuple10<String, Integer, Double, Double, Double, Double, Double, Double, Double, Double>> allVectors;
 
 
@@ -66,7 +66,7 @@ public class BatchJob {
 		// (team, edition)
 		DataSet<Tuple2<String, Integer>> winners;
 
-		// (rank weight, win ratio, loss ratio, goals ratio, finals ratio, semi finals ratio)
+		// (rank weight, win ratio, loss ratio, goals ratio, goals per match, finals ratio, semi finals ratio)
 		DataSet<Tuple8<Double, Double, Double, Double, Double, Double, Double, Double>> winnerVector;
 
 
