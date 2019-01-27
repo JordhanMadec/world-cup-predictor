@@ -36,7 +36,7 @@ import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.*;
 
-public class BatchJob {
+public class PredictionAlgorithm {
 
 	public static void main(String[] args) throws Exception {
 		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
@@ -47,16 +47,16 @@ public class BatchJob {
 
 		// (team, edition, rank average, rank evolution)
 		DataSet<Tuple4<String, Integer, Double, Integer>> fifaRanks;
-		// (team, edition, win ratio, loss ratio, goals ratio)
+		// (team, edition, win ratio, loss ratio, goals ratio, goals per match)
 		DataSet<Tuple6<String, Integer, Double, Double, Double, Double>> internationalResults;
-		// (team, edition, finals ratio, semi finals ratio)
+		// (team, edition, finals ratio, semi finals ratio, hosting)
 		DataSet<Tuple5<String, Integer, Double, Double, Double>> worldcupHistory;
 
 
 
 		// ----- ALL VECTORS -----
 
-		// (team, edition, rank weight, win ratio, loss ratio, goals ratio, goals per match, finals ratio, semi finals ratio)
+		// (team, edition, rank weight, win ratio, loss ratio, goals ratio, goals per match, finals ratio, semi finals ratio, hosting)
 		DataSet<Tuple10<String, Integer, Double, Double, Double, Double, Double, Double, Double, Double>> allVectors;
 
 
@@ -66,7 +66,7 @@ public class BatchJob {
 		// (team, edition)
 		DataSet<Tuple2<String, Integer>> winners;
 
-		// (rank weight, win ratio, loss ratio, goals ratio, goals per match, finals ratio, semi finals ratio)
+		// (rank weight, win ratio, loss ratio, goals ratio, goals per match, finals ratio, semi finals ratio, hosting)
 		DataSet<Tuple8<Double, Double, Double, Double, Double, Double, Double, Double>> winnerVector;
 
 
@@ -99,7 +99,7 @@ public class BatchJob {
 
 		worldcupHistory = env.readCsvFile(Settings.worldcupHistoryPath)
 				.ignoreFirstLine()
-				.types(Integer.class, String.class, String.class, String.class, String.class, String.class, Integer.class, Integer.class, Integer.class, Float.class)
+				.types(Integer.class, String.class, String.class, String.class, String.class, String.class)
 				.flatMap(new WorldcupHistoryStats())
 				.groupBy(0)
 				.sortGroup(1, Order.ASCENDING)
